@@ -1,0 +1,63 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # set to false, if you do NOT want to check the correct VirtualBox Guest Additions version when booting this box
+  if defined?(VagrantVbguest::Middleware)
+    config.vbguest.auto_update = true
+  end
+
+  config.vm.box = "bento/centos-7.5"
+
+  config.vm.define "k8s-jenkins" do |jenkins|
+      config.vm.hostname = "k8s-jenkins"
+      jenkins.vm.network :private_network, ip: "172.16.10.100"
+      jenkins.vm.synced_folder('.', '/Vagrantfiles', type: 'rsync')
+      jenkins.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+      jenkins.vm.provider :esxi do |lb|
+          lb.memory = 2048
+      end
+  end
+
+#  config.vm.define "sonar" do |sonar|
+#      config.vm.hostname = "k8s-sonar"
+#      sonar.vm.synced_folder('.', '/Vagrantfiles', type: 'rsync')
+#      sonar.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+#      sonar.vm.network :private_network, ip: "172.16.10.110"
+#      sonar.vm.provider :esxi do |lb|
+#          lb.memory = 2048
+#      end
+#  end
+
+ config.vm.define "k8s-nexus", primary: true do |nexus|
+     config.vm.hostname = "k8s-nexus"
+     nexus.vm.network :private_network, ip: "172.16.10.120"
+     nexus.vm.synced_folder('.', '/Vagrantfiles', type: 'rsync')
+     nexus.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+     nexus.vm.provider :esxi do |lb|
+       lb.memory = 1024
+     end
+ end
+ 
+  config.vm.provider :vmware_esxi do |esxi, overrider|
+    #
+    #   Provider settings
+    #
+    esxi.esxi_hostname = '10.10.1.10'
+    esxi.esxi_username = 'vagrant'
+    esxi.esxi_password = 'env:'
+    #esxi.esxi_hostport = 22
+    esxi.esxi_virtual_network = 'VM Network'
+    #esxi.esxi_disk_store = 'DS_001'
+    #esxi.esxi_resource_pool = '/Vagrant'
+    #esxi.guest_memsize = '4096'
+    #esxi.guest_numvcpus = '2'
+  end
+  config.vm.provision :shell,
+    :keep_color => true,
+    :path => "setup.sh"
+end

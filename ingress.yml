@@ -1,0 +1,21 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: example
+  namespace: default
+spec:
+  tls:
+    - secretName: example-com-tls
+      hosts:
+        - dev.example.com
+  rules:
+    - host: dev.example.com
+      http:
+        paths:
+          - backend:
+              serviceName: nginx
+              servicePort: 80
+            path: /

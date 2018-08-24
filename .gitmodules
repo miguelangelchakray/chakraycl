@@ -1,0 +1,9 @@
+[submodule "vagrant-esxi-nodes"]
+	path = vagrant-esxi-nodes
+	url = https://github.com/miguelangelchakray/vagrant-esxi-nodes.git
+[submodule "kubeless"]
+	path = kubeless
+	url = https://github.com/kubeless/kubeless.git
+[submodule "kubespray"]
+	path = kubespray
+	url = https://github.com/miguelangelchakray/kubespray.git

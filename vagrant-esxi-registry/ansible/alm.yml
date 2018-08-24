@@ -1,0 +1,22 @@
+---
+# Let's rock on ALM
+- name: Deploy Jenkins CI
+  hosts: jenkins_server
+  remote_user: "{{ ansible_ssh_user | default('vagrant') }}"
+  become: yes
+
+  roles:
+    - geerlingguy.repo-epel
+    - geerlingguy.jenkins
+    - geerlingguy.git
+    - tecris.maven
+    - geerlingguy.ansible
+
+- name: Deploy Nexus Server
+  hosts: nexus_server
+  remote_user: "{{ ansible_ssh_user | default('vagrant') }}"
+  become: yes
+
+  roles:
+    - geerlingguy.java
+    - savoirfairelinux.nexus3-oss
